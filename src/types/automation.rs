@@ -7,28 +7,47 @@ pub struct AutomationRule {
     #[serde(rename = "sessionId")]
     pub session_id: String,
     pub name: String,
-    pub pattern: String,
-    #[serde(rename = "matchType")]
-    pub match_type: String, // "exact", "contains", "regex"
-    pub reply: String,
-    #[serde(default)]
-    pub active: bool,
+    pub enabled: bool,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub conditions: Option<serde_json::Value>,
+    #[serde(rename = "replyText")]
+    pub reply_text: String,
+    #[serde(rename = "cooldownSeconds")]
+    pub cooldown_seconds: u32,
+    #[serde(default, rename = "createdAt", skip_serializing_if = "Option::is_none")]
+    pub created_at: Option<String>,
+    #[serde(default, rename = "updatedAt", skip_serializing_if = "Option::is_none")]
+    pub updated_at: Option<String>,
 }
 
 /// Request to create an automation rule.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CreateAutomationRuleRequest {
     pub name: String,
-    pub pattern: String,
-    #[serde(rename = "matchType")]
-    pub match_type: String,
-    pub reply: String,
-    #[serde(default = "default_true")]
-    pub active: bool,
+    #[serde(rename = "replyText")]
+    pub reply_text: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub conditions: Option<serde_json::Value>,
+    #[serde(
+        default,
+        rename = "cooldownSeconds",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub cooldown_seconds: Option<u32>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub enabled: Option<bool>,
 }
 
-fn default_true() -> bool {
-    true
+impl CreateAutomationRuleRequest {
+    pub fn new(name: impl Into<String>, reply_text: impl Into<String>) -> Self {
+        Self {
+            name: name.into(),
+            reply_text: reply_text.into(),
+            conditions: None,
+            cooldown_seconds: None,
+            enabled: Some(true),
+        }
+    }
 }
 
 /// Request to update an automation rule.
@@ -36,12 +55,20 @@ fn default_true() -> bool {
 pub struct UpdateAutomationRuleRequest {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub name: Option<String>,
+    #[serde(
+        default,
+        rename = "replyText",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub reply_text: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub pattern: Option<String>,
-    #[serde(default, rename = "matchType", skip_serializing_if = "Option::is_none")]
-    pub match_type: Option<String>,
+    pub conditions: Option<serde_json::Value>,
+    #[serde(
+        default,
+        rename = "cooldownSeconds",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub cooldown_seconds: Option<u32>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub reply: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub active: Option<bool>,
+    pub enabled: Option<bool>,
 }

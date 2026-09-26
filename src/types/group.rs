@@ -53,15 +53,17 @@ pub struct GroupJoinInfo {
     pub participant_count: Option<usize>,
 }
 
-/// Group settings (announce mode, locked settings, ephemeral duration).
+/// Group settings (announce mode, locked settings, ephemeral duration, member add mode).
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GroupSettings {
     #[serde(default)]
     pub announce: Option<bool>,
     #[serde(default)]
     pub locked: Option<bool>,
-    #[serde(default, rename = "ephemeralDuration")]
-    pub ephemeral_duration: Option<i32>,
+    #[serde(default, rename = "ephemeralSeconds", alias = "ephemeralDuration")]
+    pub ephemeral_seconds: Option<u32>,
+    #[serde(default, rename = "memberAddMode")]
+    pub member_add_mode: Option<String>,
 }
 
 /// Request to update group settings.
@@ -73,10 +75,17 @@ pub struct UpdateGroupSettingsRequest {
     pub locked: Option<bool>,
     #[serde(
         default,
-        rename = "ephemeralDuration",
+        rename = "ephemeralSeconds",
+        alias = "ephemeralDuration",
         skip_serializing_if = "Option::is_none"
     )]
-    pub ephemeral_duration: Option<i32>,
+    pub ephemeral_seconds: Option<u32>,
+    #[serde(
+        default,
+        rename = "memberAddMode",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub member_add_mode: Option<String>,
 }
 
 /// Pending group membership request.
@@ -100,14 +109,41 @@ pub struct InviteCodeResponse {
 /// Request to create a new group.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CreateGroupRequest {
-    pub subject: String,
+    #[serde(rename = "name", alias = "subject")]
+    pub name: String,
     pub participants: Vec<String>,
+}
+
+impl CreateGroupRequest {
+    pub fn new(name: impl Into<String>, participants: Vec<String>) -> Self {
+        Self {
+            name: name.into(),
+            participants,
+        }
+    }
+
+    pub fn subject(&self) -> &str {
+        &self.name
+    }
 }
 
 /// Request to join a group via invite code.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct JoinGroupRequest {
-    pub code: String,
+    #[serde(rename = "inviteCode", alias = "code")]
+    pub invite_code: String,
+}
+
+impl JoinGroupRequest {
+    pub fn new(invite_code: impl Into<String>) -> Self {
+        Self {
+            invite_code: invite_code.into(),
+        }
+    }
+
+    pub fn code(&self) -> &str {
+        &self.invite_code
+    }
 }
 
 /// Request to update group subject.

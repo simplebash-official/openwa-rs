@@ -48,11 +48,35 @@ pub struct UpdateCheckResponse {
     pub update_available: bool,
 }
 
-/// System configuration key-value pairs.
+/// Infrastructure configuration payload for PUT /api/infra/config (SaveConfigDto).
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct InfraConfig {
-    #[serde(default)]
-    pub config: serde_json::Value,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub database: Option<serde_json::Value>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub redis: Option<serde_json::Value>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub queue: Option<serde_json::Value>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub storage: Option<serde_json::Value>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub engine: Option<serde_json::Value>,
+}
+
+/// System configuration key-value pairs (alias for InfraConfig).
+pub type SaveConfigRequest = InfraConfig;
+
+/// Request payload to restart infrastructure containers.
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct RestartRequest {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub profiles: Option<Vec<String>>,
+    #[serde(
+        default,
+        rename = "profilesToRemove",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub profiles_to_remove: Option<Vec<String>>,
 }
 
 /// Restart response.

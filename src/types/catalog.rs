@@ -52,8 +52,19 @@ pub struct SendProductRequest {
     pub product_id: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub body: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(default, skip_serializing)]
     pub footer: Option<String>,
+}
+
+impl SendProductRequest {
+    pub fn new(chat_id: impl Into<String>, product_id: impl Into<String>) -> Self {
+        Self {
+            chat_id: chat_id.into(),
+            product_id: product_id.into(),
+            body: None,
+            footer: None,
+        }
+    }
 }
 
 /// Query parameters for listing catalog products.

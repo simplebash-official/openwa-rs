@@ -93,7 +93,7 @@ impl ChatsResource {
     pub async fn mark_unread(
         &self,
         session_id: &str,
-        req: MarkChatRequest,
+        req: MarkChatUnreadRequest,
     ) -> Result<SuccessResult, OpenWAError> {
         let path = format!(
             "/api/sessions/{}/chats/unread",
@@ -109,7 +109,7 @@ impl ChatsResource {
     pub async fn archive(
         &self,
         session_id: &str,
-        req: MarkChatRequest,
+        req: ArchiveChatRequest,
     ) -> Result<SuccessResult, OpenWAError> {
         let path = format!(
             "/api/sessions/{}/chats/archive",
@@ -125,7 +125,7 @@ impl ChatsResource {
     pub async fn pin(
         &self,
         session_id: &str,
-        req: MarkChatRequest,
+        req: PinChatRequest,
     ) -> Result<SuccessResult, OpenWAError> {
         let path = format!(
             "/api/sessions/{}/chats/pin",

@@ -52,6 +52,50 @@ pub struct SendMediaRequest {
     pub caption: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub mentions: Option<Vec<String>>,
+    #[serde(default, rename = "quotedMessageId", skip_serializing_if = "Option::is_none")]
+    pub quoted_message_id: Option<String>,
+}
+
+/// Request to send an audio message (file or voice note PTT).
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct SendAudioRequest {
+    #[serde(rename = "chatId")]
+    pub chat_id: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub url: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub base64: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub mimetype: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub filename: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub caption: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub mentions: Option<Vec<String>>,
+    #[serde(default, rename = "quotedMessageId", skip_serializing_if = "Option::is_none")]
+    pub quoted_message_id: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ptt: Option<bool>,
+}
+
+impl SendAudioRequest {
+    pub fn from_url(chat_id: impl Into<String>, url: impl Into<String>) -> Self {
+        Self {
+            chat_id: chat_id.into(),
+            url: Some(url.into()),
+            ..Default::default()
+        }
+    }
+
+    pub fn voice_note(chat_id: impl Into<String>, url: impl Into<String>) -> Self {
+        Self {
+            chat_id: chat_id.into(),
+            url: Some(url.into()),
+            ptt: Some(true),
+            ..Default::default()
+        }
+    }
 }
 
 impl SendMediaRequest {
@@ -108,10 +152,27 @@ pub struct SendLocationRequest {
 pub struct SendContactRequest {
     #[serde(rename = "chatId")]
     pub chat_id: String,
-    #[serde(rename = "contactId")]
-    pub contact_id: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub name: Option<String>,
+    #[serde(rename = "contactName", alias = "name")]
+    pub contact_name: String,
+    #[serde(rename = "contactNumber", alias = "contactId")]
+    pub contact_number: String,
+    #[serde(default, rename = "quotedMessageId", skip_serializing_if = "Option::is_none")]
+    pub quoted_message_id: Option<String>,
+}
+
+impl SendContactRequest {
+    pub fn new(
+        chat_id: impl Into<String>,
+        contact_name: impl Into<String>,
+        contact_number: impl Into<String>,
+    ) -> Self {
+        Self {
+            chat_id: chat_id.into(),
+            contact_name: contact_name.into(),
+            contact_number: contact_number.into(),
+            quoted_message_id: None,
+        }
+    }
 }
 
 /// Request to send a stored message template.
@@ -119,10 +180,21 @@ pub struct SendContactRequest {
 pub struct SendTemplateRequest {
     #[serde(rename = "chatId")]
     pub chat_id: String,
-    #[serde(rename = "templateId")]
-    pub template_id: String,
+    #[serde(default, rename = "templateId", skip_serializing_if = "Option::is_none")]
+    pub template_id: Option<String>,
+    #[serde(default, rename = "templateName", skip_serializing_if = "Option::is_none")]
+    pub template_name: Option<String>,
+    #[serde(
+        default,
+        rename = "vars",
+        alias = "variables",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub vars: Option<serde_json::Value>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub variables: Option<serde_json::Value>,
+    pub mentions: Option<Vec<String>>,
+    #[serde(default, rename = "linkPreview", skip_serializing_if = "Option::is_none")]
+    pub link_preview: Option<bool>,
 }
 
 /// Request to send a native poll.
@@ -134,10 +206,13 @@ pub struct SendPollRequest {
     pub options: Vec<String>,
     #[serde(
         default,
-        rename = "multipleAnswers",
+        rename = "allowMultipleAnswers",
+        alias = "multipleAnswers",
         skip_serializing_if = "Option::is_none"
     )]
-    pub multiple_answers: Option<bool>,
+    pub allow_multiple_answers: Option<bool>,
+    #[serde(default, rename = "quotedMessageId", skip_serializing_if = "Option::is_none")]
+    pub quoted_message_id: Option<String>,
 }
 
 /// Request to reply to an existing message.
@@ -155,6 +230,8 @@ pub struct ReplyMessageRequest {
 /// Request to forward an existing message.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ForwardMessageRequest {
+    #[serde(rename = "fromChatId")]
+    pub from_chat_id: String,
     #[serde(rename = "toChatId")]
     pub to_chat_id: String,
     #[serde(rename = "messageId")]
@@ -170,6 +247,8 @@ pub struct ClickButtonRequest {
     pub message_id: String,
     #[serde(rename = "buttonId")]
     pub button_id: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub text: Option<String>,
 }
 
 /// Request to react to a message with an emoji (empty string clears reaction).
@@ -179,7 +258,8 @@ pub struct ReactMessageRequest {
     pub chat_id: String,
     #[serde(rename = "messageId")]
     pub message_id: String,
-    pub reaction: String,
+    #[serde(rename = "emoji", alias = "reaction")]
+    pub emoji: String,
 }
 
 /// Request to delete a message.
@@ -189,8 +269,13 @@ pub struct DeleteMessageRequest {
     pub chat_id: String,
     #[serde(rename = "messageId")]
     pub message_id: String,
-    #[serde(default, rename = "everyone")]
-    pub everyone: bool,
+    #[serde(
+        default,
+        rename = "forEveryone",
+        alias = "everyone",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub for_everyone: Option<bool>,
 }
 
 /// Request to edit an already sent text message.
@@ -200,7 +285,8 @@ pub struct EditMessageRequest {
     pub chat_id: String,
     #[serde(rename = "messageId")]
     pub message_id: String,
-    pub text: String,
+    #[serde(rename = "body", alias = "text")]
+    pub body: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub mentions: Option<Vec<String>>,
 }
@@ -241,8 +327,8 @@ pub struct StarMessageRequest {
 pub struct VotePollRequest {
     #[serde(rename = "chatId")]
     pub chat_id: String,
-    #[serde(rename = "messageId")]
-    pub message_id: String,
+    #[serde(rename = "pollMessageId", alias = "messageId")]
+    pub poll_message_id: String,
     /// Texts of the options selected (not option IDs).
     pub options: Vec<String>,
 }
@@ -304,20 +390,96 @@ pub struct ReactionRecord {
     pub reaction: String,
 }
 
+/// Media payload inside a bulk message item.
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct BulkMediaDto {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub url: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub base64: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub mimetype: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub filename: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ptt: Option<bool>,
+}
+
+/// Content payload inside a bulk message item.
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct BulkMessageContent {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub text: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub image: Option<BulkMediaDto>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub video: Option<BulkMediaDto>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub audio: Option<BulkMediaDto>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub document: Option<BulkMediaDto>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub caption: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub mentions: Option<Vec<String>>,
+}
+
 /// Single message item in a bulk send batch.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct BulkMessageItem {
     #[serde(rename = "chatId")]
     pub chat_id: String,
-    pub text: String,
+    #[serde(rename = "type")]
+    pub message_type: String, // "text" | "image" | "video" | "audio" | "document"
+    pub content: BulkMessageContent,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub mentions: Option<Vec<String>>,
+    pub variables: Option<std::collections::HashMap<String, String>>,
+}
+
+impl BulkMessageItem {
+    pub fn text(chat_id: impl Into<String>, text: impl Into<String>) -> Self {
+        Self {
+            chat_id: chat_id.into(),
+            message_type: "text".to_string(),
+            content: BulkMessageContent {
+                text: Some(text.into()),
+                ..Default::default()
+            },
+            variables: None,
+        }
+    }
+}
+
+/// Options controlling bulk batch execution.
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct BulkMessageOptions {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub delay_between_messages: Option<u64>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub randomize_delay: Option<bool>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub stop_on_error: Option<bool>,
 }
 
 /// Request to enqueue a bulk send batch.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SendBulkRequest {
+    #[serde(default, rename = "batchId", skip_serializing_if = "Option::is_none")]
+    pub batch_id: Option<String>,
     pub messages: Vec<BulkMessageItem>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub options: Option<BulkMessageOptions>,
+}
+
+impl SendBulkRequest {
+    pub fn new(messages: Vec<BulkMessageItem>) -> Self {
+        Self {
+            batch_id: None,
+            messages,
+            options: None,
+        }
+    }
 }
 
 /// Response returned when a bulk batch is enqueued (HTTP 202).

@@ -94,11 +94,11 @@ impl MessagesResource {
             .await
     }
 
-    /// Send an audio file (url or base64). (Requires OPERATOR role).
+    /// Send an audio file or voice note (url or base64). (Requires OPERATOR role).
     pub async fn send_audio(
         &self,
         session_id: &str,
-        req: SendMediaRequest,
+        req: SendAudioRequest,
     ) -> Result<MessageResponse, OpenWAError> {
         let path = format!(
             "/api/sessions/{}/messages/send-audio",

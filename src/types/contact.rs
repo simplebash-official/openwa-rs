@@ -61,12 +61,19 @@ pub struct ContactPhoneResponse {
 }
 
 /// Request to create or update a contact in the account address book.
-#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct UpsertContactRequest {
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub name: Option<String>,
-    #[serde(default, rename = "firstName", skip_serializing_if = "Option::is_none")]
-    pub first_name: Option<String>,
+    #[serde(rename = "firstName")]
+    pub first_name: String,
     #[serde(default, rename = "lastName", skip_serializing_if = "Option::is_none")]
     pub last_name: Option<String>,
+}
+
+impl UpsertContactRequest {
+    pub fn new(first_name: impl Into<String>) -> Self {
+        Self {
+            first_name: first_name.into(),
+            last_name: None,
+        }
+    }
 }

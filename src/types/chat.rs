@@ -38,7 +38,39 @@ pub struct MarkChatReadRequest {
     pub chat_id: String,
 }
 
-/// Request to mark a chat (archive / pin / delete / unread).
+/// Request to mark a chat as unread.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct MarkChatUnreadRequest {
+    #[serde(rename = "chatId")]
+    pub chat_id: String,
+}
+
+/// Request to archive or unarchive a chat.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ArchiveChatRequest {
+    #[serde(rename = "chatId")]
+    pub chat_id: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub archive: Option<bool>,
+}
+
+/// Request to pin or unpin a chat.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct PinChatRequest {
+    #[serde(rename = "chatId")]
+    pub chat_id: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub pin: Option<bool>,
+}
+
+/// Request to delete a chat.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct DeleteChatRequest {
+    #[serde(rename = "chatId")]
+    pub chat_id: String,
+}
+
+/// Request to mark a chat (archive / pin / delete / unread) (legacy combined helper).
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct MarkChatRequest {
     #[serde(rename = "chatId")]
@@ -57,8 +89,21 @@ pub struct MuteChatRequest {
     #[serde(rename = "chatId")]
     pub chat_id: String,
     /// Epoch MILLISECONDS timestamp to mute until, or None/null to unmute.
-    #[serde(rename = "muteExpiration")]
-    pub mute_expiration: Option<i64>,
+    #[serde(rename = "muteUntil", alias = "muteExpiration")]
+    pub mute_until: Option<i64>,
+}
+
+impl MuteChatRequest {
+    pub fn new(chat_id: impl Into<String>, mute_until: Option<i64>) -> Self {
+        Self {
+            chat_id: chat_id.into(),
+            mute_until,
+        }
+    }
+
+    pub fn mute_expiration(&self) -> Option<i64> {
+        self.mute_until
+    }
 }
 
 /// Chat typing/recording presence state.

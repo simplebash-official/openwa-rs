@@ -15,8 +15,26 @@ pub struct MediaConvertRequest {
     pub url: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub base64: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(default, skip_serializing)]
     pub mimetype: Option<String>,
+}
+
+impl MediaConvertRequest {
+    pub fn from_url(url: impl Into<String>) -> Self {
+        Self {
+            url: Some(url.into()),
+            base64: None,
+            mimetype: None,
+        }
+    }
+
+    pub fn from_base64(base64: impl Into<String>) -> Self {
+        Self {
+            url: None,
+            base64: Some(base64.into()),
+            mimetype: None,
+        }
+    }
 }
 
 /// Converted media payload.

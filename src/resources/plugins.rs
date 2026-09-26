@@ -85,8 +85,13 @@ impl PluginsResource {
         config: serde_json::Value,
     ) -> Result<PluginRecord, OpenWAError> {
         let path = format!("/api/plugins/{}/config", encode_path_segment(id));
+        let body = if config.is_object() && config.get("config").is_some() {
+            config
+        } else {
+            serde_json::json!({ "config": config })
+        };
         self.transport
-            .execute(Method::PUT, &path, None, Some(config))
+            .execute(Method::PUT, &path, None, Some(body))
             .await
     }
 
@@ -108,8 +113,13 @@ impl PluginsResource {
             encode_path_segment(id),
             encode_path_segment(session_id)
         );
+        let body = if config.is_object() && config.get("config").is_some() {
+            config
+        } else {
+            serde_json::json!({ "config": config })
+        };
         self.transport
-            .execute(Method::PUT, &path, None, Some(config))
+            .execute(Method::PUT, &path, None, Some(body))
             .await
     }
 
@@ -126,11 +136,16 @@ impl PluginsResource {
             .await
     }
 
-    /// Update a plugin to its latest version.
-    pub async fn update(&self, id: &str) -> Result<PluginRecord, OpenWAError> {
+    /// Update an installed plugin in place from a URL.
+    pub async fn update(
+        &self,
+        id: &str,
+        req: InstallPluginUrlRequest,
+    ) -> Result<PluginRecord, OpenWAError> {
         let path = format!("/api/plugins/{}/update", encode_path_segment(id));
+        let body = serde_json::to_value(req)?;
         self.transport
-            .execute(Method::POST, &path, None, None)
+            .execute(Method::POST, &path, None, Some(body))
             .await
     }
 

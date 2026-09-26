@@ -175,6 +175,19 @@ impl SessionsResource {
         req: SetOnlinePresenceRequest,
     ) -> Result<SuccessResult, OpenWAError> {
         let path = format!("/api/sessions/{}/presence", encode_path_segment(session_id));
+        let body = serde_json::json!({ "available": req.available });
+        self.transport
+            .execute(Method::PUT, &path, None, Some(body))
+            .await
+    }
+
+    /// Set account's online presence using SetOwnPresenceRequest. (Requires OPERATOR role).
+    pub async fn set_own_presence(
+        &self,
+        session_id: &str,
+        req: SetOwnPresenceRequest,
+    ) -> Result<SuccessResult, OpenWAError> {
+        let path = format!("/api/sessions/{}/presence", encode_path_segment(session_id));
         let body = serde_json::to_value(req)?;
         self.transport
             .execute(Method::PUT, &path, None, Some(body))
@@ -260,7 +273,7 @@ impl SessionsResource {
     pub async fn mark_chat_unread(
         &self,
         session_id: &str,
-        req: MarkChatRequest,
+        req: MarkChatUnreadRequest,
     ) -> Result<SuccessResult, OpenWAError> {
         let path = format!(
             "/api/sessions/{}/chats/unread",
@@ -276,7 +289,7 @@ impl SessionsResource {
     pub async fn archive_chat(
         &self,
         session_id: &str,
-        req: MarkChatRequest,
+        req: ArchiveChatRequest,
     ) -> Result<SuccessResult, OpenWAError> {
         let path = format!(
             "/api/sessions/{}/chats/archive",
@@ -308,7 +321,7 @@ impl SessionsResource {
     pub async fn pin_chat(
         &self,
         session_id: &str,
-        req: MarkChatRequest,
+        req: PinChatRequest,
     ) -> Result<SuccessResult, OpenWAError> {
         let path = format!(
             "/api/sessions/{}/chats/pin",
@@ -324,7 +337,7 @@ impl SessionsResource {
     pub async fn delete_chat(
         &self,
         session_id: &str,
-        req: MarkChatRequest,
+        req: DeleteChatRequest,
     ) -> Result<SuccessResult, OpenWAError> {
         let path = format!(
             "/api/sessions/{}/chats/delete",

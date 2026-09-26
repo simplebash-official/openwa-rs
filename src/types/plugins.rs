@@ -57,3 +57,15 @@ pub struct PluginHealthResponse {
 pub struct UpdatePluginSessionsRequest {
     pub sessions: Vec<String>,
 }
+
+/// Request to update plugin configuration.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct PluginConfigRequest {
+    pub config: serde_json::Value,
+}
+
+impl PluginConfigRequest {
+    pub fn new(config: serde_json::Value) -> Self {
+        Self { config }
+    }
+}

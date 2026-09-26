@@ -55,26 +55,78 @@ pub struct SendTextStatusRequest {
     pub font: Option<u8>,
 }
 
-/// Request to post an image or video status update.
+/// Media payload for status updates (URL or base64 with mimetype).
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
-pub struct SendMediaStatusRequest {
+pub struct StatusMediaInput {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub url: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub base64: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub mimetype: Option<String>,
+}
+
+impl StatusMediaInput {
+    pub fn from_url(url: impl Into<String>) -> Self {
+        Self {
+            url: Some(url.into()),
+            base64: None,
+            mimetype: None,
+        }
+    }
+
+    pub fn from_base64(base64: impl Into<String>, mimetype: impl Into<String>) -> Self {
+        Self {
+            url: None,
+            base64: Some(base64.into()),
+            mimetype: Some(mimetype.into()),
+        }
+    }
+}
+
+/// Request to post an image status update.
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct SendImageStatusRequest {
+    pub image: StatusMediaInput,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub caption: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub recipients: Option<Vec<String>>,
+}
+
+/// Request to post a video status update.
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct SendVideoStatusRequest {
+    pub video: StatusMediaInput,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub caption: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub recipients: Option<Vec<String>>,
+}
+
+/// Request to post an image or video status update (generic helper).
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct SendMediaStatusRequest {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub image: Option<StatusMediaInput>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub video: Option<StatusMediaInput>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub caption: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub recipients: Option<Vec<String>>,
 }
 
 /// Request to post a voice status update (must be Ogg/Opus).
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct SendVoiceStatusRequest {
+    pub audio: StatusMediaInput,
+    #[serde(
+        default,
+        rename = "backgroundColor",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub background_color: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub url: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub base64: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub mimetype: Option<String>,
+    pub recipients: Option<Vec<String>>,
 }

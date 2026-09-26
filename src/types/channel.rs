@@ -58,8 +58,16 @@ pub struct SubscribeChannelRequest {
 /// Request to demote an admin in a channel.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DemoteChannelAdminRequest {
-    #[serde(rename = "participantId")]
-    pub participant_id: String,
+    #[serde(rename = "userId", alias = "participantId")]
+    pub user_id: String,
+}
+
+impl DemoteChannelAdminRequest {
+    pub fn new(user_id: impl Into<String>) -> Self {
+        Self {
+            user_id: user_id.into(),
+        }
+    }
 }
 
 /// Request to transfer channel ownership.

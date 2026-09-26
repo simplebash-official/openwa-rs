@@ -19,27 +19,38 @@ pub struct WebhookRecord {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CreateWebhookRequest {
     pub url: String,
-    pub events: Vec<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub events: Option<Vec<String>>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub secret: Option<String>,
-    #[serde(default = "default_true")]
-    pub active: bool,
+    #[serde(
+        default,
+        rename = "headers",
+        alias = "customHeaders",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub headers: Option<HashMap<String, String>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub filters: Option<serde_json::Value>,
     #[serde(
         default,
         rename = "retryCount",
         skip_serializing_if = "Option::is_none"
     )]
     pub retry_count: Option<u32>,
-    #[serde(
-        default,
-        rename = "customHeaders",
-        skip_serializing_if = "Option::is_none"
-    )]
-    pub custom_headers: Option<HashMap<String, String>>,
 }
 
-fn default_true() -> bool {
-    true
+impl CreateWebhookRequest {
+    pub fn new(url: impl Into<String>) -> Self {
+        Self {
+            url: url.into(),
+            events: None,
+            secret: None,
+            headers: None,
+            filters: None,
+            retry_count: None,
+        }
+    }
 }
 
 /// Request to update an existing webhook.
@@ -51,20 +62,23 @@ pub struct UpdateWebhookRequest {
     pub events: Option<Vec<String>>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub secret: Option<String>,
+    #[serde(
+        default,
+        rename = "headers",
+        alias = "customHeaders",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub headers: Option<HashMap<String, String>>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub active: Option<bool>,
+    pub filters: Option<serde_json::Value>,
     #[serde(
         default,
         rename = "retryCount",
         skip_serializing_if = "Option::is_none"
     )]
     pub retry_count: Option<u32>,
-    #[serde(
-        default,
-        rename = "customHeaders",
-        skip_serializing_if = "Option::is_none"
-    )]
-    pub custom_headers: Option<HashMap<String, String>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub active: Option<bool>,
 }
 
 /// Response returned from testing a webhook.

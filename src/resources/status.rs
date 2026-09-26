@@ -87,7 +87,7 @@ impl StatusResource {
     pub async fn send_image(
         &self,
         session_id: &str,
-        req: SendMediaStatusRequest,
+        req: SendImageStatusRequest,
     ) -> Result<StatusResult, OpenWAError> {
         let path = format!(
             "/api/sessions/{}/status/send-image",
@@ -103,7 +103,7 @@ impl StatusResource {
     pub async fn send_video(
         &self,
         session_id: &str,
-        req: SendMediaStatusRequest,
+        req: SendVideoStatusRequest,
     ) -> Result<StatusResult, OpenWAError> {
         let path = format!(
             "/api/sessions/{}/status/send-video",

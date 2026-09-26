@@ -2,6 +2,7 @@
 use openwa::events::WSServerMessage;
 #[cfg(feature = "events")]
 use openwa::OpenWAClient;
+#[cfg(feature = "events")]
 use std::env;
 
 #[tokio::main]

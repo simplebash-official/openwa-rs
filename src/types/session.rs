@@ -159,11 +159,39 @@ pub struct PairingCodeRequest {
 /// Response containing an 8-character pairing code.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PairingCodeResponse {
-    pub code: String,
+    #[serde(rename = "pairingCode", alias = "code")]
+    pub pairing_code: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub status: Option<String>,
 }
 
-/// Request payload to set online presence for the account.
+impl PairingCodeResponse {
+    pub fn code(&self) -> &str {
+        &self.pairing_code
+    }
+}
+
+/// Request payload to set online presence for the account (available = true/false).
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SetOwnPresenceRequest {
+    pub available: bool,
+}
+
+impl SetOwnPresenceRequest {
+    pub fn available() -> Self {
+        Self { available: true }
+    }
+
+    pub fn unavailable() -> Self {
+        Self { available: false }
+    }
+}
+
+/// Legacy request payload to set online presence for the account.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SetOnlinePresenceRequest {
-    pub presence: String, // "available" or "unavailable"
+    #[serde(default)]
+    pub available: bool,
+    #[serde(default, skip_serializing)]
+    pub presence: Option<String>,
 }
