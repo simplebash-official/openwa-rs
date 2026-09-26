@@ -1,13 +1,13 @@
 # openwa-rs
 
-[![CI](https://github.com/mayurasandakalum/openwa-rs/actions/workflows/ci.yml/badge.svg)](https://github.com/mayurasandakalum/openwa-rs/actions/workflows/ci.yml)
+[![CI](https://github.com/simplebash-official/openwa-rs/actions/workflows/ci.yml/badge.svg)](https://github.com/simplebash-official/openwa-rs/actions/workflows/ci.yml)
 [![Crates.io](https://img.shields.io/crates/v/openwa.svg)](https://crates.io/crates/openwa)
 [![Documentation](https://docs.rs/openwa/badge.svg)](https://docs.rs/openwa)
 [![License](https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-blue.svg)](LICENSE)
 [![MSRV](https://img.shields.io/badge/MSRV-1.80.0-informational.svg)](Cargo.toml)
 
 
-Official-grade, high-performance, idiomatic Rust client library and SDK for the [OpenWA WhatsApp API Gateway](https://github.com/mayurasandakalum/openwa-rs).
+Official-grade, high-performance, idiomatic Rust client library and SDK for the [OpenWA WhatsApp API Gateway](https://github.com/simplebash-official/openwa-rs).
 
 ---
 

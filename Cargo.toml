@@ -6,7 +6,7 @@ rust-version = "1.80"
 
 description = "Official-grade Rust client library for the OpenWA WhatsApp API Gateway"
 license = "MIT OR Apache-2.0"
-repository = "https://github.com/mayurasandakalum/openwa-rs"
+repository = "https://github.com/simplebash-official/openwa-rs"
 readme = "README.md"
 keywords = ["openwa", "whatsapp", "client", "sdk", "api"]
 categories = ["api-bindings", "web-programming::http-client"]

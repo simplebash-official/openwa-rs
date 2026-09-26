@@ -1,6 +1,6 @@
 //! # OpenWA Rust Client Library
 //!
-//! Official-grade, idiomatic Rust client library for the [OpenWA WhatsApp API Gateway](https://github.com/mayurasandakalum/openwa-rs).
+//! Official-grade, idiomatic Rust client library for the [OpenWA WhatsApp API Gateway](https://github.com/simplebash-official/openwa-rs).
 //!
 //! Provides comprehensive support for all 160 REST endpoints across 24 tags, constant-time HMAC-SHA256
 //! webhook signature verification, method idempotency retry fencing, and real-time Socket.IO events.
