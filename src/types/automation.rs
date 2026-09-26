@@ -55,11 +55,7 @@ impl CreateAutomationRuleRequest {
 pub struct UpdateAutomationRuleRequest {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub name: Option<String>,
-    #[serde(
-        default,
-        rename = "replyText",
-        skip_serializing_if = "Option::is_none"
-    )]
+    #[serde(default, rename = "replyText", skip_serializing_if = "Option::is_none")]
     pub reply_text: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub conditions: Option<serde_json::Value>,

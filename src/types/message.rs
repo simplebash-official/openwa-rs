@@ -52,7 +52,11 @@ pub struct SendMediaRequest {
     pub caption: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub mentions: Option<Vec<String>>,
-    #[serde(default, rename = "quotedMessageId", skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        rename = "quotedMessageId",
+        skip_serializing_if = "Option::is_none"
+    )]
     pub quoted_message_id: Option<String>,
 }
 
@@ -73,7 +77,11 @@ pub struct SendAudioRequest {
     pub caption: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub mentions: Option<Vec<String>>,
-    #[serde(default, rename = "quotedMessageId", skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        rename = "quotedMessageId",
+        skip_serializing_if = "Option::is_none"
+    )]
     pub quoted_message_id: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ptt: Option<bool>,
@@ -156,7 +164,11 @@ pub struct SendContactRequest {
     pub contact_name: String,
     #[serde(rename = "contactNumber", alias = "contactId")]
     pub contact_number: String,
-    #[serde(default, rename = "quotedMessageId", skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        rename = "quotedMessageId",
+        skip_serializing_if = "Option::is_none"
+    )]
     pub quoted_message_id: Option<String>,
 }
 
@@ -180,9 +192,17 @@ impl SendContactRequest {
 pub struct SendTemplateRequest {
     #[serde(rename = "chatId")]
     pub chat_id: String,
-    #[serde(default, rename = "templateId", skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        rename = "templateId",
+        skip_serializing_if = "Option::is_none"
+    )]
     pub template_id: Option<String>,
-    #[serde(default, rename = "templateName", skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        rename = "templateName",
+        skip_serializing_if = "Option::is_none"
+    )]
     pub template_name: Option<String>,
     #[serde(
         default,
@@ -193,7 +213,11 @@ pub struct SendTemplateRequest {
     pub vars: Option<serde_json::Value>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub mentions: Option<Vec<String>>,
-    #[serde(default, rename = "linkPreview", skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        rename = "linkPreview",
+        skip_serializing_if = "Option::is_none"
+    )]
     pub link_preview: Option<bool>,
 }
 
@@ -211,7 +235,11 @@ pub struct SendPollRequest {
         skip_serializing_if = "Option::is_none"
     )]
     pub allow_multiple_answers: Option<bool>,
-    #[serde(default, rename = "quotedMessageId", skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        rename = "quotedMessageId",
+        skip_serializing_if = "Option::is_none"
+    )]
     pub quoted_message_id: Option<String>,
 }
 

@@ -37,9 +37,17 @@ pub struct IntegrationInstance {
 pub struct CreateIntegrationInstanceRequest {
     #[serde(rename = "instanceId")]
     pub instance_id: String,
-    #[serde(default, rename = "sessionScope", skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        rename = "sessionScope",
+        skip_serializing_if = "Option::is_none"
+    )]
     pub session_scope: Option<String>,
-    #[serde(default, rename = "verifyToken", skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        rename = "verifyToken",
+        skip_serializing_if = "Option::is_none"
+    )]
     pub verify_token: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub secret: Option<String>,
@@ -64,7 +72,11 @@ impl CreateIntegrationInstanceRequest {
 pub struct UpdateIntegrationInstanceRequest {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub enabled: Option<bool>,
-    #[serde(default, rename = "sessionScope", skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        rename = "sessionScope",
+        skip_serializing_if = "Option::is_none"
+    )]
     pub session_scope: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub config: Option<serde_json::Value>,

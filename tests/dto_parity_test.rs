@@ -244,7 +244,10 @@ fn test_media_convert_request_does_not_serialize_mimetype() {
     req.mimetype = Some("audio/wav".into());
     let v = serde_json::to_value(&req).unwrap();
     assert_eq!(v["url"], "https://example.com/input.wav");
-    assert!(v.get("mimetype").is_none(), "ConvertMediaDto rejects mimetype with 400");
+    assert!(
+        v.get("mimetype").is_none(),
+        "ConvertMediaDto rejects mimetype with 400"
+    );
 }
 
 #[test]
@@ -254,7 +257,10 @@ fn test_send_product_request_does_not_serialize_footer() {
     let v = serde_json::to_value(&req).unwrap();
     assert_eq!(v["chatId"], "123@c.us");
     assert_eq!(v["productId"], "prod-1");
-    assert!(v.get("footer").is_none(), "SendProductDto rejects footer with 400");
+    assert!(
+        v.get("footer").is_none(),
+        "SendProductDto rejects footer with 400"
+    );
 }
 
 #[test]
@@ -290,5 +296,8 @@ fn test_presence_requests_serialization() {
     };
     let v = serde_json::to_value(&legacy).unwrap();
     assert_eq!(v["available"], true);
-    assert!(v.get("presence").is_none(), "SetOwnPresenceDto rejects presence with 400");
+    assert!(
+        v.get("presence").is_none(),
+        "SetOwnPresenceDto rejects presence with 400"
+    );
 }
