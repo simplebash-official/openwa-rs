@@ -143,3 +143,79 @@ pub struct GroupMembershipChangeData {
     pub participant_ids: Vec<String>,
     pub timestamp: i64,
 }
+
+#[cfg(feature = "axum")]
+pub mod axum_support {
+    use super::*;
+    use ::axum::{
+        async_trait,
+        body::Bytes,
+        extract::{FromRequest, Request},
+        http::StatusCode,
+        response::{IntoResponse, Response},
+    };
+    use serde::de::DeserializeOwned;
+
+    /// Extension wrapper for providing the webhook secret to the Axum extractor.
+    #[derive(Debug, Clone)]
+    pub struct WebhookSecret(pub String);
+
+    impl WebhookSecret {
+        pub fn new(secret: impl Into<String>) -> Self {
+            Self(secret.into())
+        }
+    }
+
+    /// Strongly-typed Axum extractor for OpenWA webhooks.
+    ///
+    /// Automatically verifies the HMAC-SHA256 signature if [`WebhookSecret`] is present
+    /// in the request extensions, and deserializes the body into [`WebhookDelivery<T>`].
+    #[derive(Debug, Clone)]
+    pub struct OpenWAWebhook<T = serde_json::Value>(pub WebhookDelivery<T>);
+
+    #[async_trait]
+    impl<S, T> FromRequest<S> for OpenWAWebhook<T>
+    where
+        S: Send + Sync,
+        T: DeserializeOwned + Send,
+    {
+        type Rejection = Response;
+
+        async fn from_request(req: Request, state: &S) -> Result<Self, Self::Rejection> {
+            let secret = req.extensions().get::<WebhookSecret>().map(|s| s.0.clone());
+            let signature = req
+                .headers()
+                .get("x-openwa-signature")
+                .or_else(|| req.headers().get("X-OpenWA-Signature"))
+                .and_then(|v| v.to_str().ok())
+                .map(String::from);
+
+            let bytes = Bytes::from_request(req, state)
+                .await
+                .map_err(IntoResponse::into_response)?;
+
+            if let Some(secret_str) = secret {
+                let sig = signature.as_deref().unwrap_or_default();
+                if !verify_signature(&bytes, &secret_str, sig) {
+                    return Err(
+                        (StatusCode::UNAUTHORIZED, "Invalid OpenWA webhook signature")
+                            .into_response(),
+                    );
+                }
+            }
+
+            let delivery: WebhookDelivery<T> = serde_json::from_slice(&bytes).map_err(|e| {
+                (
+                    StatusCode::BAD_REQUEST,
+                    format!("Malformed webhook payload: {}", e),
+                )
+                    .into_response()
+            })?;
+
+            Ok(OpenWAWebhook(delivery))
+        }
+    }
+}
+
+#[cfg(feature = "axum")]
+pub use axum_support::{OpenWAWebhook, WebhookSecret};

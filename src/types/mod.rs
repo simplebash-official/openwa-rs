@@ -1,6 +1,7 @@
 pub mod audit;
 pub mod auth;
 pub mod automation;
+pub mod builders;
 pub mod calls;
 pub mod catalog;
 pub mod channel;
@@ -27,6 +28,7 @@ pub mod webhook;
 pub use audit::*;
 pub use auth::*;
 pub use automation::*;
+pub use builders::*;
 pub use calls::*;
 pub use catalog::*;
 pub use channel::*;

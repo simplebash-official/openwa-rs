@@ -45,6 +45,7 @@
 pub mod client;
 pub mod error;
 pub mod events;
+pub mod pagination;
 pub mod resources;
 pub mod retry;
 pub mod transport;
@@ -53,9 +54,13 @@ pub mod webhook;
 
 pub use client::{OpenWAClient, OpenWAClientBuilder};
 pub use error::{OpenWAApiError, OpenWAError, OpenWARateLimitError};
+pub use pagination::{fetch_all_pages, Paginator};
 pub use retry::RetryPolicy;
 pub use types::*;
 pub use webhook::{verify_signature, WebhookDelivery, WebhookHeaders};
 
 #[cfg(feature = "events")]
-pub use events::EventStream;
+pub use events::{EventStream, ReconnectConfig, ReconnectingEventStream};
+
+#[cfg(feature = "axum")]
+pub use webhook::{OpenWAWebhook, WebhookSecret};

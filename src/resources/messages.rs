@@ -431,6 +431,56 @@ impl MessagesResource {
             .await
     }
 
+    /// Stream media bytes directly from the gateway.
+    pub async fn stream_media(
+        &self,
+        session_id: &str,
+        chat_id: &str,
+        message_id: &str,
+    ) -> Result<reqwest::Response, OpenWAError> {
+        let path = format!(
+            "/api/sessions/{}/messages/{}/{}/media",
+            encode_path_segment(session_id),
+            encode_path_segment(chat_id),
+            encode_path_segment(message_id)
+        );
+        self.transport
+            .execute_stream(Method::GET, &path, None)
+            .await
+    }
+
+    /// Download media for a message directly into a local file asynchronously without buffering in memory.
+    pub async fn download_media_to_file(
+        &self,
+        session_id: &str,
+        chat_id: &str,
+        message_id: &str,
+        destination: impl AsRef<std::path::Path>,
+    ) -> Result<u64, OpenWAError> {
+        use futures_util::StreamExt;
+        use tokio::io::AsyncWriteExt;
+
+        let resp = self.stream_media(session_id, chat_id, message_id).await?;
+        let mut file = tokio::fs::File::create(destination).await.map_err(|e| {
+            OpenWAError::Config(format!("Failed to create destination file: {}", e))
+        })?;
+
+        let mut stream = resp.bytes_stream();
+        let mut total_bytes: u64 = 0;
+        while let Some(chunk_res) = stream.next().await {
+            let chunk = chunk_res.map_err(OpenWAError::Transport)?;
+            file.write_all(&chunk)
+                .await
+                .map_err(|e| OpenWAError::Config(format!("Failed to write media chunk: {}", e)))?;
+            total_bytes += chunk.len() as u64;
+        }
+        file.flush()
+            .await
+            .map_err(|e| OpenWAError::Config(format!("Failed to flush media file: {}", e)))?;
+
+        Ok(total_bytes)
+    }
+
     /// Enqueue an asynchronous bulk message send batch. (Requires OPERATOR role).
     pub async fn send_bulk(
         &self,

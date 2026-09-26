@@ -82,6 +82,16 @@ impl StatusMediaInput {
             mimetype: Some(mimetype.into()),
         }
     }
+
+    /// Construct a status media payload from a local file asynchronously.
+    pub async fn from_file(path: impl AsRef<std::path::Path>) -> Result<Self, std::io::Error> {
+        let (b64, mime, _) = crate::types::media::read_file_as_base64(path).await?;
+        Ok(Self {
+            url: None,
+            base64: Some(b64),
+            mimetype: Some(mime),
+        })
+    }
 }
 
 /// Request to post an image status update.

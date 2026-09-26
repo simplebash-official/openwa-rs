@@ -140,6 +140,20 @@ impl OpenWAClient {
         EventStream::connect(&self.transport.base_url, &self.transport.api_key).await
     }
 
+    /// Connect to the real-time Socket.IO WebSocket `/events` stream with automatic reconnection and replay.
+    #[cfg(feature = "events")]
+    pub async fn reconnecting_events(
+        &self,
+        config: Option<crate::events::ReconnectConfig>,
+    ) -> Result<crate::events::ReconnectingEventStream, OpenWAError> {
+        crate::events::ReconnectingEventStream::connect(
+            &self.transport.base_url,
+            &self.transport.api_key,
+            config,
+        )
+        .await
+    }
+
     // ==========================================
     // Raw Request Escape Hatch
     // ==========================================

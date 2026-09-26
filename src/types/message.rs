@@ -104,6 +104,22 @@ impl SendAudioRequest {
             ..Default::default()
         }
     }
+
+    /// Construct an audio message request from a local file asynchronously.
+    pub async fn from_file(
+        chat_id: impl Into<String>,
+        path: impl AsRef<std::path::Path>,
+        ptt: bool,
+    ) -> Result<Self, std::io::Error> {
+        let (b64, mime, _) = crate::types::media::read_file_as_base64(path).await?;
+        Ok(Self {
+            chat_id: chat_id.into(),
+            base64: Some(b64),
+            mimetype: Some(mime),
+            ptt: if ptt { Some(true) } else { None },
+            ..Default::default()
+        })
+    }
 }
 
 impl SendMediaRequest {
@@ -126,6 +142,22 @@ impl SendMediaRequest {
             mimetype: Some(mimetype.into()),
             ..Default::default()
         }
+    }
+
+    /// Construct a media message request from a local file asynchronously.
+    pub async fn from_file(
+        chat_id: impl Into<String>,
+        path: impl AsRef<std::path::Path>,
+    ) -> Result<Self, std::io::Error> {
+        let path_ref = path.as_ref();
+        let (b64, mime, filename) = crate::types::media::read_file_as_base64(path_ref).await?;
+        Ok(Self {
+            chat_id: chat_id.into(),
+            base64: Some(b64),
+            mimetype: Some(mime),
+            filename: Some(filename),
+            ..Default::default()
+        })
     }
 
     pub fn with_caption(mut self, caption: impl Into<String>) -> Self {

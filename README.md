@@ -18,9 +18,31 @@ Official-grade, high-performance, idiomatic Rust client library and SDK for the 
 - **WhatsApp Path Encoding**: Preserves WhatsApp identifier characters (`@`, `:`, `+`) while escaping path traversal characters (`/`, `#`, `?`).
 - **Credential Protection**: Hardened redirect policy (`Policy::none()`) prevents token and header leakage across redirects.
 - **Idempotency-Aware Retries**: Automatically retries safe HTTP methods (`GET`, `PUT`, `DELETE`) on `503` / `429` backpressure, while strictly fencing non-idempotent `POST` requests and detecting `SEND_PACING_LIMITED` refusal codes.
-- **Constant-Time Webhook Verification**: Cryptographic HMAC-SHA256 signature validation with `subtle::ConstantTimeEq` against timing attacks.
-- **Real-Time WebSocket Events**: Complete Socket.IO v4 client implementation for real-time bidirectional events over WebSocket (enabled with feature `events`).
+- **Local File & Streaming Media**: Asynchronously reads and Base64-encodes local files (`from_file`) and streams large downloads directly to disk (`download_media_to_file`).
+- **Fluent Interactive Builders**: Ergonomic builder APIs for native WhatsApp Polls (`PollBuilder`), Text mentions (`TextRequestBuilder`), and bulk campaigns (`BulkMessageBuilder`).
+- **Constant-Time Webhook Verification**: Cryptographic HMAC-SHA256 signature validation with `subtle::ConstantTimeEq` and turnkey **Axum** extractor (`OpenWAWebhook`).
+- **Resilient Real-Time Events**: Socket.IO v4 client with wildcard subscriptions and auto-reconnecting stream with exponential backoff (`ReconnectingEventStream`).
+- **Async Pagination Streams**: Built-in lazy paginators (`Paginator`) and batch collectors (`fetch_all_pages`).
 - **Ergonomic Namespace Layout**: Clean separation between standard operator resources (`messages()`, `sessions()`, `chats()`, etc.) and privileged administration (`admin()`).
+
+---
+
+## 📚 Documentation & Guides
+
+Comprehensive, production-ready guides are available in the [`docs/`](docs/) directory:
+
+- 🧭 **[Documentation Hub & Index](docs/README.md)**
+- 🚀 **[01. Getting Started](docs/01-getting-started.md)** — Installation, client configuration, sending first message.
+- 🏛️ **[02. Architecture & Design](docs/02-architecture-and-design.md)** — JID encoding, redirect fences, multi-engine support.
+- 📱 **[03. Sessions & Phone Pairing](docs/03-sessions-and-pairing.md)** — QR codes, 8-digit pairing codes, proxies, lifecycle.
+- 💬 **[04. Messages & Media](docs/04-messages-and-media.md)** — Text formatting, media from disk/URL, audio PTT, polls, reactions, bulk.
+- 👥 **[05. Chats, Groups & Channels](docs/05-chats-groups-channels.md)** — Unread markers, typing indicators, group admin, ephemeral timers.
+- 🏷️ **[06. Contacts, Stories & Labels](docs/06-contacts-status-labels.md)** — Number verification, WhatsApp stories, business labels.
+- 🔐 **[07. Webhooks & Security](docs/07-webhooks-and-security.md)** — HMAC-SHA256 verification, Axum and Hyper servers.
+- ⚡ **[08. Real-Time WebSocket Events](docs/08-realtime-events.md)** — Socket.IO streaming, topic filters, auto-reconnection.
+- 🛡️ **[09. Error Handling & Retries](docs/09-error-handling-retries.md)** — Rate limits, send pacing detection, idempotency fencing.
+- ⚙️ **[10. Administration & Operations](docs/10-admin-and-operations.md)** — Scoped API keys, system config, Prometheus metrics.
+- 📋 **[11. API Reference Matrix](docs/11-api-reference-matrix.md)** — Complete lookup table for all 24 resources & 160 endpoints.
 
 ---
 

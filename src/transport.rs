@@ -193,4 +193,48 @@ impl Transport {
             }
         }
     }
+
+    /// Execute an HTTP request and return the live response for streaming bytes.
+    pub async fn execute_stream(
+        &self,
+        method: Method,
+        path: &str,
+        query: Option<&[(&str, &str)]>,
+    ) -> Result<reqwest::Response, OpenWAError> {
+        let full_url = format!("{}{}", self.base_url, path);
+        let mut req = self.client.request(method.clone(), &full_url);
+
+        for (k, v) in self.default_headers.iter() {
+            req = req.header(k, v);
+        }
+
+        req = req.header(ACCEPT, "*/*").header(
+            HeaderName::from_static("x-api-key"),
+            HeaderValue::from_str(&self.api_key).map_err(|e| OpenWAError::Config(e.to_string()))?,
+        );
+
+        if let Some(ref q) = query {
+            req = req.query(q);
+        }
+
+        let resp = req.send().await?;
+        let status = resp.status();
+        if status.is_success() {
+            Ok(resp)
+        } else {
+            let context = format!("{} {}", method, path);
+            let retry_after_hdr = resp
+                .headers()
+                .get("retry-after")
+                .and_then(|h| h.to_str().ok())
+                .map(|s| s.to_string());
+            let bytes = resp.bytes().await.unwrap_or_default().to_vec();
+            Err(OpenWAError::from_response(
+                status,
+                &bytes,
+                &context,
+                retry_after_hdr.as_deref(),
+            ))
+        }
+    }
 }
