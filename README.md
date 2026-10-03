@@ -139,6 +139,8 @@ fn handle_incoming_webhook(raw_body: &[u8], signature_header: &str, secret: &str
 
 ---
 
+> All 23 webhook events (plus `*`) are covered by `openwa::WebhookEvent` / `WEBHOOK_EVENTS`, with typed payload structs in `openwa::webhook`. `message.failed` and `session.reconnect_loop` are webhook-only.
+
 ## ⚡ Real-Time Events (WebSocket)
 
 Connect to the OpenWA Socket.IO `/events` stream to receive live events in real time:

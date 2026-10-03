@@ -57,7 +57,9 @@ pub use error::{OpenWAApiError, OpenWAError, OpenWARateLimitError};
 pub use pagination::{fetch_all_pages, Paginator};
 pub use retry::RetryPolicy;
 pub use types::*;
-pub use webhook::{verify_signature, WebhookDelivery, WebhookHeaders};
+pub use webhook::{
+    verify_signature, WebhookDelivery, WebhookEvent, WebhookHeaders, WEBHOOK_EVENTS,
+};
 
 #[cfg(feature = "events")]
 pub use events::{EventStream, ReconnectConfig, ReconnectingEventStream};

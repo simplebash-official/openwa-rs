@@ -71,6 +71,8 @@ stream.subscribe("*", &["session.qr", "session.status"])?;
 stream.unsubscribe("marketing-bot", &["message.received"])?;
 ```
 
+> `message.failed` and `session.reconnect_loop` are **webhook-only**; they cannot be subscribed to on the socket. See [Webhooks](07-webhooks-and-security.md).
+
 ---
 
 ## 4. Resilient Auto-Reconnection: `ReconnectingEventStream`

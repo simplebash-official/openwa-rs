@@ -114,13 +114,28 @@ OPENWA_WEBHOOK_SECRET="my_secret" cargo run --example webhook_server
 
 ## 4. Standard Event Types
 
+Use `WebhookEvent` (or `WEBHOOK_EVENTS`) for the event names and `delivery.event_kind()` to match on a received delivery.
+
 | Event | Data Payload Type | Description |
 |:---|:---|:---|
-| `message.received` | `MessageRecord` | An inbound message arrived from a user or group. |
-| `message.ack` | `MessageAckData` | Delivery receipt update (`pending`, `sent`, `delivered`, `read`). |
-| `message.reaction` | `ReactionRecord` | A user added or updated an emoji reaction on a message. |
-| `session.qr` | `SessionQrData` | New QR code generated for phone pairing. |
-| `session.status` | `SessionStatusData` | Session state changed (`STARTING`, `WORKING`, `FAILED`). |
-| `session.authenticated` | `SessionAuthenticatedData` | Session successfully authenticated with WhatsApp. |
-| `group.join` | `GroupMembershipChangeData` | A user joined or was added to a group. |
-| `group.leave` | `GroupMembershipChangeData` | A user left or was removed from a group. |
+| `message.received` | `MessageRecord` | Inbound message arrived. |
+| `message.sent` | `MessageRecord` | Outbound message created from this session. |
+| `message.ack` | `MessageAckData` | Delivery/read receipt update. |
+| `message.failed` | `MessageFailedData (= MessageAckData)` | Receipt resolved to `failed` (sent in addition to `message.ack`). **Webhook-only.** |
+| `message.revoked` | `MessageRevokedData` | Message deleted for everyone; reconcile on `revoked_id`. |
+| `message.reaction` | `MessageReactionData` | Reaction added, changed or removed (empty `reaction` = removed). |
+| `message.edited` | `MessageEditedData` | Message body or caption edited. |
+| `session.status` | `SessionStatusData` | Session status changed. |
+| `session.qr` | `SessionQrData` | New pairing QR (PNG data URL). |
+| `session.authenticated` | `SessionAuthenticatedData` | Session paired and ready. |
+| `session.disconnected` | `SessionDisconnectedData` | Engine/WhatsApp-side disconnect. |
+| `session.reconnect_loop` | `SessionReconnectLoopData` | Every 5th consecutive reconnect attempt. **Webhook-only.** |
+| `session.restriction` | `SessionRestrictionData` | Account restriction placed or lifted. |
+| `presence.update` | `PresenceUpdateData` | Subscribed chat came online/typing/offline. Baileys only. |
+| `group.join / group.leave` | `GroupMembershipChangeData` | Participants joined or left. |
+| `group.update` | `GroupUpdateData` | Subject, description or settings changed. |
+| `group.join_request` | `GroupJoinRequestData` | Someone asked to join a group you administer. |
+| `call.received` | `CallReceivedData` | Incoming call ringing. |
+| `call.accepted / call.rejected / call.missed` | `CallOutcomeData` | Call outcome. Baileys only. |
+| `status.received` | `StatusReceivedData` | A contact posted a status. |
+| `*` | `—` | Wildcard: all events. |

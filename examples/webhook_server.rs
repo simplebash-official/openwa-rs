@@ -1,4 +1,4 @@
-use openwa::webhook::{verify_signature, WebhookDelivery};
+use openwa::webhook::{verify_signature, SessionReconnectLoopData, WebhookDelivery, WebhookEvent};
 use serde_json::Value;
 
 /// Example demonstrating how to verify HMAC-SHA256 signatures and deserialize
@@ -50,4 +50,21 @@ fn main() {
     println!("  Session ID:       {}", delivery.session_id);
     println!("  Idempotency Key:  {:?}", delivery.idempotency_key);
     println!("  Payload:          {}", delivery.data);
+
+    // 3. Match on the typed event name
+    match delivery.event_kind() {
+        Some(WebhookEvent::MessageFailed) => {
+            eprintln!("Outgoing message failed: {}", delivery.data)
+        }
+        Some(WebhookEvent::SessionReconnectLoop) => {
+            if let Ok(d) = serde_json::from_value::<SessionReconnectLoopData>(delivery.data.clone())
+            {
+                eprintln!(
+                    "Session {} stuck reconnecting (attempt {})",
+                    d.session_id, d.attempts
+                );
+            }
+        }
+        _ => {}
+    }
 }

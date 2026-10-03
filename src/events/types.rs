@@ -1,6 +1,9 @@
 use serde::{Deserialize, Serialize};
 
 /// Subscribable event type constants matching OpenWA gateway specifications.
+///
+/// `message.failed` and `session.reconnect_loop` are webhook-only and intentionally absent;
+/// see [`crate::webhook::WEBHOOK_EVENTS`].
 pub const SUBSCRIBABLE_EVENTS: &[&str] = &[
     "message.received",
     "message.sent",
